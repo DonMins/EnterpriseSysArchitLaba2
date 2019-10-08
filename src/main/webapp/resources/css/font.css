@@ -1,0 +1,109 @@
+body{
+    font-family: "Comic Sans MS";
+    font-size: 18pt;
+    text-align: center;
+    background-image:  url("font.jpg");
+    color: #ffffff;
+}
+textarea{
+    min-width: 550px;
+    background: #fce9c0;
+    border: 2px solid #a9c358;
+    padding: 10px;
+    width: 90%;
+    border-radius: 5px;
+    height: 400px;
+    font-size: 14px;
+    resize: none;
+}
+table {
+    font-size: 15pt;
+    margin: auto;
+    width: 100%;
+}
+
+.button {
+    padding:5px 15px;
+    background:#ccc;
+    border:0 none;
+    cursor:pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 15pt;
+    margin-top: 5px;
+}
+
+.input{
+    margin-top: -35px;
+    width: 200px;
+    height: 40px;
+    margin-left: 250px;
+    max-width: 1024px;
+}
+.text{
+    min-width: 620px;
+
+    font-size: 20pt;
+    text-align: left;
+    margin-left: 35px;
+    margin-top: 15px;
+}
+.userInput{
+    font-size: 12pt;
+    text-align: right;
+    margin-top: -13px;
+    margin-right: 110px;
+}
+#error{
+    font-size: 12pt;
+    color: red;
+    margin-left: 250px;
+    margin-top: -5px;
+}
+
+button:not(.active){
+    border-radius: 6px;
+}
+
+button:hover:not(.active) {
+    background: #786b59; /* Цвет фона под ссылкой */
+    color: #ffe; /* Цвет ссылки */
+    border-radius: 6px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /*background-color: #29617c;*/
+    position: fixed;
+    top: 0;
+    left: -2px;
+    width: 100%;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 5px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #786b59;
+}
+
+.active {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 10px 16px;
+    text-decoration: none;
+    background-color: #4CAF50;
+}
