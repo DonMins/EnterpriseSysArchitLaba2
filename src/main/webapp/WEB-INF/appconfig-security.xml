@@ -13,6 +13,7 @@
         <intercept-url pattern="/" access="hasAnyRole('ROLE_USER')"/>
         <intercept-url pattern="/game" access="hasAnyRole('ROLE_USER')"/>
         <intercept-url pattern="/rating" access="hasAnyRole('ROLE_USER')"/>
+        <intercept-url pattern="/xmlHistory" access="hasAnyRole('ROLE_USER')"/>
 
         <form-login login-page="/login" default-target-url="/game" authentication-failure-url="/login?error"
                     username-parameter="username" password-parameter="password"/>

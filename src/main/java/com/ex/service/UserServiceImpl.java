@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         user.setYouNumber("0000");
         userDao.save(user);
         ratingsDao.save(new Rating(0,0,user));
-        historyDao.save(new History(user,""));
+//        historyDao.save(new History(user,"",0));
     }
 
     @Override

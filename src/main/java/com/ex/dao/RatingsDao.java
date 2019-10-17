@@ -8,4 +8,9 @@ public interface RatingsDao extends JpaRepository<Rating, Integer> {
 
     @Query("select u from Rating u where u.users.username=:username")
     Rating findByUsername(@Param("username")String username);
+
+    @Query("select max(u.countgame) from Rating u where u.users.username=:username")
+    Integer findMaxGameNumber(@Param("username")String username);
+
+
 }
