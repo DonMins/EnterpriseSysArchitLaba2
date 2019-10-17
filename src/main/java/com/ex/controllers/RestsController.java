@@ -54,7 +54,7 @@ public class RestsController {
 
         for( History hist : history)
         {
-            
+
             newHistory=newHistory +"№ игры " + hist.getGameNumber()+" Попытка: " +hist.getData() + "\n";
 
         }
