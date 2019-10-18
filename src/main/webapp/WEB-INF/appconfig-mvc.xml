@@ -26,11 +26,7 @@
 
     </bean>
 
-    <bean id="XMLConverter" class="com.ex.controllers.XMLConverter">
-        <property name="marshaller" ref="castorMarshaller" />
-        <property name="unmarshaller" ref="castorMarshaller" />
-    </bean>
-    <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" />
+
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix">
