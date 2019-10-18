@@ -27,6 +27,7 @@
 <ul>
     <li class="rating"><a href="${contextPath}/rating">Рейтинг игроков</a></li>
     <li class="rating"><a href="${contextPath}/xmlHistory">XML</a></li>
+    <li class="rating"><a href="${contextPath}/jsonHistory">JSON</a></li>
     <button style="float:right" class="button" type="submit" onclick="document.forms['logoutForm'].submit()">Выйти
     </button>
 

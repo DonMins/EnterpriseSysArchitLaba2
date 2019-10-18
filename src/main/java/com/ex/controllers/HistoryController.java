@@ -43,7 +43,7 @@ public class HistoryController {
 
 
     @RequestMapping(value="/xmlHistory", method = RequestMethod.GET)
-    public @ResponseBody Histories getUser() throws JAXBException {
+    public @ResponseBody Histories getHistory() throws JAXBException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         List<History> history = historyDao.findByUsername(auth.getName());
@@ -58,6 +58,28 @@ public class HistoryController {
             history1.setGameNumber(hist.getGameNumber());
             history1.setId(hist.getId());
             histories.getHistories().add(history1);
+
+        }
+
+        return histories;
+    }
+
+
+    @RequestMapping(value="/jsonHistory", method = RequestMethod.GET)
+    public @ResponseBody List<History> getJsonHistory() throws JAXBException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        List<History> history = historyDao.findByUsername(auth.getName());
+
+        List<History> histories = new ArrayList<History>();
+
+        for( History hist : history) {
+            History history1 = new History();
+
+            history1.setData(hist.getData());
+            history1.setGameNumber(hist.getGameNumber());
+            history1.setId(hist.getId());
+            histories.add(history1);
 
         }
 
