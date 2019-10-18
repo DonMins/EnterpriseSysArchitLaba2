@@ -5,8 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * A simple JavaBean domain object representing the game history of different users
@@ -21,14 +24,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NoArgsConstructor
 @Table(name = "history")
 @XmlRootElement(name = "history")
-public class History {
+@XmlAccessorType(XmlAccessType.FIELD)
+public class History implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @XmlElement
     @Column(name = "data",length = 65535)
+    @XmlElement
     private String data;
 
     @OneToOne(fetch=FetchType.LAZY)
@@ -36,8 +40,9 @@ public class History {
     private User users;
 
     /** Номер игры пользователя */
-    @XmlElement
+
     @Column(name = "gameNumber")
+    @XmlElement
     private int gameNumber;
 
     public History(User user, String data, int gameNumber) {
