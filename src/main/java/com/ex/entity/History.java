@@ -29,6 +29,7 @@ public class History implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @XmlElement
     private Integer id;
 
     @Column(name = "data",length = 65535)
@@ -44,6 +45,7 @@ public class History implements Serializable {
     @Column(name = "gameNumber")
     @XmlElement
     private int gameNumber;
+
 
     public History(User user, String data, int gameNumber) {
         this.data = data;

@@ -43,7 +43,6 @@ public class RestsController {
     @Autowired
     private GameController gameController;
 
-    private static final String XML_FILE_NAME = "customer.xml";
 
     @RequestMapping(method = RequestMethod.POST, value = "/history", consumes = "text/plain")
     ResponseEntity<?> history(@RequestBody String string) throws IOException {
@@ -58,22 +57,6 @@ public class RestsController {
             newHistory=newHistory +"№ игры " + hist.getGameNumber()+" Попытка: " +hist.getData() + "\n";
 
         }
-
-
-//        ApplicationContext appContext = new ClassPathXmlApplicationContext("App.xml");
-//        XMLConverter converter = (XMLConverter) appContext.getBean("XMLConverter");
-//
-//
-//
-//        History customer = new History();
-//        customer.setGameNumber(1);
-//        customer.setData("WOOORK");
-//
-//
-//        converter.convertFromObjectToXML(customer, XML_FILE_NAME);
-
-
-
 
         return ResponseEntity.ok().headers(new HttpHeaders() {{
             add("Content-Type", "text/plain; charset=utf-8");
