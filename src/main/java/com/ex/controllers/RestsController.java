@@ -51,12 +51,28 @@ public class RestsController {
         List<History> history = historyDao.findByUsername(auth.getName());
         String newHistory="";
 
-        for( History hist : history)
-        {
+        JSONObject obj = new JSONObject(string);
+        String isClear = obj.getString("clear"); //was there a request to clear history in the database
+        if (isClear.equals("yes")) {
+            for( History hist : history)
+            {
 
-            newHistory=newHistory +"№ игры " + hist.getGameNumber()+" Попытка: " +hist.getData() + "\n";
+                historyDao.delete(hist);
+
+            }
 
         }
+        else{
+            for( History hist : history)
+            {
+
+                newHistory=newHistory +"№ игры " + hist.getGameNumber()+" Попытка: " +hist.getData() + "\n";
+
+            }
+
+        }
+
+
 
         return ResponseEntity.ok().headers(new HttpHeaders() {{
             add("Content-Type", "text/plain; charset=utf-8");
