@@ -51,12 +51,7 @@ public class RegisterController {
         if (bindingResult.hasErrors()) {
             return "registration";
         }
-        Changes changes1 = new Changes("Insert","User","password",userForm.getPassword());
-        Changes changes2 = new Changes("Insert","User","userName",userForm.getUsername());
-        Changes changes3 = new Changes("Insert","User","youNumber",userForm.getYouNumber());
-        changesDao.save(changes1);
-        changesDao.save(changes2);
-        changesDao.save(changes3);
+
         userService.save(userForm);
 
         securityService.autoLogin(userForm.getUsername(), userForm.getConfirmPassword());

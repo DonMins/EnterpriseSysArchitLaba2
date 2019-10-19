@@ -1,10 +1,12 @@
 package com.ex.service;
 
 
+import com.ex.dao.ChangesDao;
 import com.ex.dao.HistoryDao;
 import com.ex.dao.RatingsDao;
 import com.ex.dao.UserDao;
 
+import com.ex.entity.Changes;
 import com.ex.entity.History;
 import com.ex.entity.Rating;
 import com.ex.entity.User;
@@ -31,6 +33,10 @@ public class UserServiceImpl implements UserService {
     private HistoryDao historyDao;
 
     @Autowired
+    private ChangesDao changesDao;
+
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
@@ -44,7 +50,21 @@ public class UserServiceImpl implements UserService {
     public void save(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setYouNumber("0000");
+        Changes changes1 = new Changes("Insert","User","password",user.getPassword());
+        Changes changes2 = new Changes("Insert","User","userName",user.getUsername());
+        Changes changes3 = new Changes("Insert","User","youNumber",user.getYouNumber());
+        changesDao.save(changes1);
+        changesDao.save(changes2);
+        changesDao.save(changes3);
         userDao.save(user);
+
+        Changes changes4 = new Changes("Insert","Rating","allAtempt","0");
+        Changes changes5 = new Changes("Insert","Rating","countGame","0");
+        Changes changes6 = new Changes("Insert","Rating","idUser",String.valueOf(user.getId()));
+        changesDao.save(changes4);
+        changesDao.save(changes5);
+        changesDao.save(changes6);
+
         ratingsDao.save(new Rating(0,0,user));
 //        historyDao.save(new History(user,"",0));
     }
