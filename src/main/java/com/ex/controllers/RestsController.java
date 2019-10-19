@@ -1,7 +1,9 @@
 package com.ex.controllers;
+import com.ex.dao.ChangesDao;
 import com.ex.dao.HistoryDao;
 import com.ex.dao.RatingsDao;
 import com.ex.dao.UserDao;
+import com.ex.entity.Changes;
 import com.ex.entity.History;
 import com.ex.entity.Rating;
 import com.ex.entity.User;
@@ -32,6 +34,9 @@ public class RestsController {
     private UserDao userDao;
 
     @Autowired
+    private ChangesDao changesDao;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -56,8 +61,14 @@ public class RestsController {
         if (isClear.equals("yes")) {
             for( History hist : history)
             {
-
+                Changes changes1 = new Changes("Delete","History","idUser",String.valueOf(hist.getUsers().getId()));
+                Changes changes2 = new Changes("Delete","History","data",hist.getData());
+                Changes changes3 = new Changes("Delete","History","gameNumber",String.valueOf(hist.getGameNumber()));
+                changesDao.save(changes1);
+                changesDao.save(changes2);
+                changesDao.save(changes3);
                 historyDao.delete(hist);
+
 
             }
 
@@ -93,6 +104,13 @@ public class RestsController {
         User user= userDao.findByUsername(auth.getName());
         Rating rating = ratingsDao.findByUsername(auth.getName());
         History history=new History(user,json.getYouNumber(),rating.getCountgame()+1);
+        String id = String.valueOf(history.getUsers().getId());
+        Changes changes1 = new Changes("Insert","History","idUser",id);
+        Changes changes2 = new Changes("Insert","History","data",history.getData());
+        Changes changes3 = new Changes("Insert","History","gameNumber",String.valueOf(history.getGameNumber()));
+        changesDao.save(changes1);
+        changesDao.save(changes2);
+        changesDao.save(changes3);
         historyDao.save(history);
 
         return ResponseEntity.ok().body(json);

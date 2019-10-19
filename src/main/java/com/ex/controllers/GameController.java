@@ -1,7 +1,9 @@
 package com.ex.controllers;
 
+import com.ex.dao.ChangesDao;
 import com.ex.dao.HistoryDao;
 import com.ex.dao.RatingsDao;
+import com.ex.entity.Changes;
 import com.ex.entity.History;
 import com.ex.entity.Rating;
 import com.ex.entity.User;
@@ -33,6 +35,9 @@ public class GameController {
 
     @Autowired
     private HistoryDao historyDao;
+
+    @Autowired
+    private ChangesDao changesDao;
 
     @Autowired
     private UserService userService;
@@ -82,6 +87,8 @@ public class GameController {
         User user = userService.findByUsername(auth.getName());
         user.setYouNumber(genNumber()); // Как только пользователь вошел на страницу game, сразу сгенерим ему число для угадывания
         System.out.println(user.getYouNumber());
+        Changes changes = new Changes("Update","User","youNumber",user.getYouNumber());
+        changesDao.save(changes);
         userService.update(user);
         return "game";
     }
@@ -128,7 +135,11 @@ public class GameController {
         if (bull == 4) {
             tempRating.setCountgame(tempRating.getCountgame() + 1);
             user.setYouNumber(genNumber());
+            Changes changes1 = new Changes("Update","Rating","countGame",String.valueOf(tempRating.getCountgame()));
+            changesDao.save(changes1);
             ratingsDao.save(tempRating);
+            Changes changes = new Changes("Update","User","youNumber",user.getYouNumber());
+            changesDao.save(changes);
             userService.update(user);
             return stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K (число угадано) \n---------------------------\nЯ загадал еще...";
         }
