@@ -61,12 +61,12 @@ public class RestsController {
         if (isClear.equals("yes")) {
             for( History hist : history)
             {
-                Changes changes1 = new Changes("Delete","History","idUser",String.valueOf(hist.getUsers().getId()));
-                Changes changes2 = new Changes("Delete","History","data",hist.getData());
-                Changes changes3 = new Changes("Delete","History","gameNumber",String.valueOf(hist.getGameNumber()));
-                changesDao.save(changes1);
-                changesDao.save(changes2);
-                changesDao.save(changes3);
+
+
+                Changes changes = new Changes("Delete","History","data",hist.getData());
+
+                changesDao.save(changes);
+
                 historyDao.delete(hist);
 
 

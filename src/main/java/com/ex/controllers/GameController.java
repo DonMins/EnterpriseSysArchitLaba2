@@ -136,7 +136,9 @@ public class GameController {
             tempRating.setCountgame(tempRating.getCountgame() + 1);
             user.setYouNumber(genNumber());
             Changes changes1 = new Changes("Update","Rating","countGame",String.valueOf(tempRating.getCountgame()));
+            Changes changes2 = new Changes("Update","Rating","allAtempt",String.valueOf(tempRating.getAllAttempt()));
             changesDao.save(changes1);
+            changesDao.save(changes2);
             ratingsDao.save(tempRating);
             Changes changes = new Changes("Update","User","youNumber",user.getYouNumber());
             changesDao.save(changes);
