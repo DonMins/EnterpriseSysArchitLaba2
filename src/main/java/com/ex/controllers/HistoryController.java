@@ -3,6 +3,8 @@ package com.ex.controllers;
 import com.ex.dao.HistoryDao;
 import com.ex.entity.History;
 import com.thoughtworks.xstream.XStream;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -60,13 +63,45 @@ public class HistoryController {
             histories.getHistories().add(history1);
 
         }
+        ConnectionFactory cf =
+                new ActiveMQConnectionFactory("tcp://localhost:61616");
+        Connection conn = null;
+        Session session = null;
+        try {
+            conn = cf.createConnection();
+            conn.start();
+            session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Destination destination =
+                    new ActiveMQQueue("spitter.queue");
+            MessageConsumer consumer = session.createConsumer(destination);
+            Message message = consumer.receive();
+            TextMessage textMessage = (TextMessage) message;
+            System.out.println("GOT A MESSAGE: " + textMessage.getText());
+            History history1 = new History();
+
+            history1.setData(textMessage.getText());
+            histories.getHistories().add(history1);
+            conn.start();
+        } catch (JMSException e) {
+// handle exception?
+        } finally {
+            try {
+                if (session != null) {
+                    session.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (JMSException ex) {
+            }
+        }
 
         return histories;
     }
 
 
     @RequestMapping(value="/jsonHistory", method = RequestMethod.GET)
-    public @ResponseBody List<History> getJsonHistory() throws JAXBException {
+    public @ResponseBody List<History> getJsonHistory() throws JAXBException, JMSException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         List<History> history = historyDao.findByUsername(auth.getName());
@@ -82,6 +117,18 @@ public class HistoryController {
             histories.add(history1);
 
         }
+
+        ConnectionFactory cf =
+                new ActiveMQConnectionFactory("tcp://localhost:61616");
+        Connection conn = cf.createConnection();
+        Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = new ActiveMQQueue("spitter.queue");
+            MessageProducer producer = session.createProducer(destination);
+            TextMessage message = session.createTextMessage();
+            message.setText("Hello world!");
+            producer.send(message);
+
+
 
         return histories;
     }
