@@ -1,6 +1,4 @@
 package com.ex.entity;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +13,6 @@ import java.io.Serializable;
 /**
  * A simple JavaBean domain object representing the JMS structure
  *
-
  */
 
 @Entity
@@ -25,7 +22,6 @@ import java.io.Serializable;
 @Table(name = "jms")
 
 public class JMSBase {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -36,8 +32,6 @@ public class JMSBase {
     @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "idUser")
     private User users;
-
-
 
     public JMSBase(User user, String message) {
         this.message = message;

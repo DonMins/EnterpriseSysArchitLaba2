@@ -1,6 +1,7 @@
 package com.ex.task;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * This class is for receiving JSON data.
@@ -11,9 +12,8 @@ import lombok.Data;
  */
 
 @Data
+@NoArgsConstructor
 public class YouNumberOfjson {
-
     private String youNumber;
-
-    public YouNumberOfjson(){}
+    private String properties;
 }

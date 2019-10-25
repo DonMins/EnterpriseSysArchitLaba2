@@ -1,6 +1,4 @@
-
 $(document).ready(function() {
-
     $('#toSend').click(function() {
             var data = $('#inputNumber').val();
             var json = {"youNumber": data};
@@ -20,7 +18,9 @@ $(document).ready(function() {
                 success: function (responseText) {
                    $('#textarea').append(responseText['youNumber'] +"\n");
                    document.getElementById("inputNumber").value = "";
-
+                    if (responseText['properties']!=="null"){
+                        alert(responseText['properties']);
+                    }
                 },
                 error: function (jqXHR) {
                     alert("error:" + jqXHR.status + " exception:" + jqXHR.responseText);

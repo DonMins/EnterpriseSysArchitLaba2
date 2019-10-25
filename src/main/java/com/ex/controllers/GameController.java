@@ -1,29 +1,26 @@
 package com.ex.controllers;
 
 import com.ex.dao.ChangesDao;
-import com.ex.dao.HistoryDao;
 import com.ex.dao.JMSBaseDao;
 import com.ex.dao.RatingsDao;
-import com.ex.entity.*;
+import com.ex.entity.Changes;
+import com.ex.entity.JMSBase;
+import com.ex.entity.Rating;
+import com.ex.entity.User;
 import com.ex.service.UserService;
-import com.ex.task.YouNumberOfjson;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.jms.*;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -33,30 +30,22 @@ import java.util.*;
 
 @Controller
 public class GameController {
-
-    @Autowired
-    private HistoryDao historyDao;
-
     @Autowired
     private ChangesDao changesDao;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private RatingsDao ratingsDao;
-
     @Autowired
     private JMSBaseDao jmsBaseDao;
 
-   final private Integer[] randomNumbers = {0,1,2,3,4,5,6,7,8,9};
+    final private Integer[] randomNumbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
     /**
      * Method displays user rating
      *
      * @return Return rating.jsp page
      */
-
     @RequestMapping(value = "/rating")
     public String rating(Model model) {
         List<Rating> ratingList = ratingsDao.findAll();
@@ -91,7 +80,7 @@ public class GameController {
         User user = userService.findByUsername(auth.getName());
         user.setYouNumber(genNumber()); // Как только пользователь вошел на страницу game, сразу сгенерим ему число для угадывания
         System.out.println(user.getYouNumber());
-        Changes changes = new Changes("Update","User","youNumber",user.getYouNumber());
+        Changes changes = new Changes("Update", "User", "youNumber", user.getYouNumber());
         changesDao.save(changes);
         userService.update(user);
         return "game";
@@ -110,15 +99,17 @@ public class GameController {
 
     private String genNumber() {
         Collections.shuffle(Arrays.asList(randomNumbers));
+        System.out.println("ЧИСЛО " + (randomNumbers[0]) + randomNumbers[1] + randomNumbers[2] + randomNumbers[3]);
         return String.valueOf(randomNumbers[0]) + randomNumbers[1] + randomNumbers[2] + randomNumbers[3];
     }
 
-        String result(String stringOfYouEnteredNumber, Authentication auth) {
+        ArrayList <String> result(String stringOfYouEnteredNumber, Authentication auth) {
+        ArrayList<String> st = new ArrayList<>();
         Rating tempRating = ratingsDao.findByUsername(auth.getName());
         tempRating.setAllAttempt(tempRating.getAllAttempt() + 1); // increase the number of attempts to guess in the database
 
         ratingsDao.save(tempRating);
-        User user = userService.findByUsername(auth.getName()) ;
+        User user = userService.findByUsername(auth.getName());
         String number = user.getYouNumber(); //Get the number to guess
 
         ArrayList<Character> numberSymbol = new ArrayList<>();
@@ -139,30 +130,33 @@ public class GameController {
         if (bull == 4) {
 //            tempRating.setCountgame(tempRating.getCountgame() + 1);
             user.setYouNumber(genNumber());
-            Changes changes1 = new Changes("Update","Rating","countGame",String.valueOf(tempRating.getCountgame()));
-            Changes changes2 = new Changes("Update","Rating","allAtempt",String.valueOf(tempRating.getAllAttempt()));
+            Changes changes1 = new Changes("Update", "Rating", "countGame", String.valueOf(tempRating.getCountgame()));
+            Changes changes2 = new Changes("Update", "Rating", "allAtempt", String.valueOf(tempRating.getAllAttempt()));
             changesDao.save(changes1);
             changesDao.save(changes2);
             ratingsDao.save(tempRating);
-            Changes changes = new Changes("Update","User","youNumber",user.getYouNumber());
+            Changes changes = new Changes("Update", "User", "youNumber", user.getYouNumber());
             changesDao.save(changes);
             userService.update(user);
-            String text="Пользователь "+ user.getUsername() +" угадал число!";
+            String text = "Пользователь " + user.getUsername() + " угадал число!";
             try {
                 sendMessage(text);
-                jmsBaseDao.save(new JMSBase(user,text));
+                jmsBaseDao.save(new JMSBase(user, text));
 
             } catch (JMSException e) {
                 e.printStackTrace();
             }
-            return stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K (число угадано) \n---------------------------\nЯ загадал еще...";
+            st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K (число угадано) \n---------------------------\nЯ загадал еще...");
+            st.add(text);
+            return st;
         }
-        return stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K";
+        st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K");
+        st.add("null");
+        return (st);
     }
 
     private void sendMessage(String text) throws JMSException {
-        ConnectionFactory cf =
-                new ActiveMQConnectionFactory("tcp://localhost:61616");
+        ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
         Connection conn = cf.createConnection();
         Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Destination destination = new ActiveMQQueue("spitter.queue");
