@@ -40,38 +40,6 @@ public class HistoryController {
             histories.getHistories().add(history1);
 
         }
-        ConnectionFactory cf =
-                new ActiveMQConnectionFactory("tcp://localhost:61616");
-        Connection conn = null;
-        Session session = null;
-        try {
-            conn = cf.createConnection();
-            conn.start();
-            session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination =
-                    new ActiveMQQueue("spitter.queue");
-            MessageConsumer consumer = session.createConsumer(destination);
-            Message message = consumer.receive();
-            TextMessage textMessage = (TextMessage) message;
-            System.out.println("GOT A MESSAGE: " + textMessage.getText());
-            History history1 = new History();
-
-            history1.setData(textMessage.getText());
-            histories.getHistories().add(history1);
-            conn.start();
-        } catch (JMSException e) {
-// handle exception?
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (JMSException ex) {
-            }
-        }
 
         return histories;
     }
@@ -94,17 +62,6 @@ public class HistoryController {
             histories.add(history1);
 
         }
-
-        ConnectionFactory cf =
-                new ActiveMQConnectionFactory("tcp://localhost:61616");
-        Connection conn = cf.createConnection();
-        Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination = new ActiveMQQueue("spitter.queue");
-            MessageProducer producer = session.createProducer(destination);
-            TextMessage message = session.createTextMessage();
-            message.setText("Hello world!");
-            producer.send(message);
-
 
 
         return histories;
