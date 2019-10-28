@@ -4,15 +4,16 @@ import com.ex.dao.ChangesDao;
 import com.ex.dao.JMSBaseDao;
 import com.ex.dao.RatingsDao;
 import com.ex.entity.Changes;
-import com.ex.entity.JMSBase;
 import com.ex.entity.Rating;
 import com.ex.entity.User;
 import com.ex.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.jms.*;
 import java.util.*;
+
+import static org.springframework.jms.support.JmsUtils.closeConnection;
 
 /**
  * @author Zdornov Maxim
@@ -38,6 +41,7 @@ public class GameController {
     private RatingsDao ratingsDao;
     @Autowired
     private JMSBaseDao jmsBaseDao;
+    private JmsTemplate jmsTemplate;
 
     final private Integer[] randomNumbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -128,22 +132,21 @@ public class GameController {
         l3.retainAll(numberSymbol);
         cow = l3.size() - bull;
         if (bull == 4) {
-//            tempRating.setCountgame(tempRating.getCountgame() + 1);
+
             user.setYouNumber(genNumber());
-            Changes changes1 = new Changes("Update", "Rating", "countGame", String.valueOf(tempRating.getCountgame()));
             Changes changes2 = new Changes("Update", "Rating", "allAtempt", String.valueOf(tempRating.getAllAttempt()));
-            changesDao.save(changes1);
             changesDao.save(changes2);
             ratingsDao.save(tempRating);
             Changes changes = new Changes("Update", "User", "youNumber", user.getYouNumber());
             changesDao.save(changes);
             userService.update(user);
             String text = "Пользователь " + user.getUsername() + " угадал число!";
-            try {
-                sendMessage(text);
-                jmsBaseDao.save(new JMSBase(user, text));
 
-            } catch (JMSException e) {
+            try {
+                User user1 = new User(user.getUsername(),user.getPassword(),user.getYouNumber());
+                sendObjectMessage(user1);
+
+            } catch (JMSException | JsonProcessingException e) {
                 e.printStackTrace();
             }
             st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K (число угадано) \n---------------------------\nЯ загадал еще...");
@@ -155,15 +158,20 @@ public class GameController {
         return (st);
     }
 
-    private void sendMessage(String text) throws JMSException {
-        ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
-        Connection conn = cf.createConnection();
-        Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination destination = new ActiveMQQueue("spitter.queue");
-        MessageProducer producer = session.createProducer(destination);
-        TextMessage message = session.createTextMessage();
-        message.setText(text);
-        producer.send(message);
+
+    private void sendObjectMessage(User user) throws JMSException, JsonProcessingException {
+            ObjectMapper mapper = new ObjectMapper();
+            ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
+            Connection conn = cf.createConnection();
+            Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = new ActiveMQQueue("spitter.queue");
+            MessageProducer producer = session.createProducer(destination);
+            ObjectMessage msg = session.createObjectMessage();
+            String tex=mapper.writeValueAsString(user);
+            msg.setObject(tex);
+            producer.send(msg);
     }
+
+
 
 }
