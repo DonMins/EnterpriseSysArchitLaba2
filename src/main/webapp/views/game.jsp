@@ -46,7 +46,7 @@
         <th style="width: 800px"><textarea readonly id="textarea"></textarea></th>
         <th style="width: 800px"><textarea readonly id="textareaHistory"></textarea></th>
     </tr>
-    <tr>
+    <tr>рррт
         <th>
             <div class="text">Поле для ввода числа:</div>
             <input class="input" type="text" id="inputNumber" maxlength='4' minlength='4'

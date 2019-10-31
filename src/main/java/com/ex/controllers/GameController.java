@@ -32,7 +32,7 @@ import static org.springframework.jms.support.JmsUtils.closeConnection;
  */
 
 @Controller
-public class GameController {
+public class GameController  {
     @Autowired
     private ChangesDao changesDao;
     @Autowired
@@ -41,7 +41,7 @@ public class GameController {
     private RatingsDao ratingsDao;
     @Autowired
     private JMSBaseDao jmsBaseDao;
-    private JmsTemplate jmsTemplate;
+
 
     final private Integer[] randomNumbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -140,7 +140,6 @@ public class GameController {
             Changes changes = new Changes("Update", "User", "youNumber", user.getYouNumber());
             changesDao.save(changes);
             userService.update(user);
-            String text = "Пользователь " + user.getUsername() + " угадал число!";
 
             try {
                 User user1 = new User(user.getUsername(),user.getPassword(),user.getYouNumber());
@@ -150,13 +149,13 @@ public class GameController {
                 e.printStackTrace();
             }
             st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K (число угадано) \n---------------------------\nЯ загадал еще...");
-            st.add(text);
             return st;
         }
         st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K");
-        st.add("null");
+
         return (st);
     }
+
 
 
     private void sendObjectMessage(User user) throws JMSException, JsonProcessingException {
