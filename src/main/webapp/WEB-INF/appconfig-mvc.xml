@@ -48,11 +48,13 @@
 <!--        <constructor-arg value="spitter.queue1"/>-->
 <!--    </bean>-->
 
-    <bean id="destination" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="spitter.queue" />
+
+
+    <bean id="destination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="spitter.topic" />
     </bean>
-    <bean id="destination1" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="spitter.queue1" />
+    <bean id="destination1" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="spitter.topic1" />
     </bean>
 
 <!--    <bean id="jmsTemplate"-->
@@ -78,6 +80,18 @@
         <property name="messageListener" ref="messageListenerGame" />
     </bean>
 
+    <bean id="XSLTViewResolver" class="org.springframework.web.servlet.view.xslt.XsltViewResolver">
+        <property name="order" value="1"/>
+        <property name="sourceKey" value="xmlSource"/>
+        <property name="viewClass" value="org.springframework.web.servlet.view.xslt.XsltView"/>
+        <property name="viewNames">
+            <array>
+                <value>XSLTView</value>
+            </array>
+        </property>
+        <property name="prefix" value="/xsl/" />
+        <property name="suffix" value=".xsl" />
+    </bean>
 
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

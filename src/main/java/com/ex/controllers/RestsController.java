@@ -36,8 +36,6 @@ public class RestsController {
     private RatingsDao ratingsDao;
     @Autowired
     private GameController gameController;
-    @Autowired
-    private GameListnerJMS gameListnerJMS;
 
     @RequestMapping(method = RequestMethod.POST, value = "/history", consumes = "text/plain")
     ResponseEntity<?> history(@RequestBody String string) throws IOException {
@@ -73,14 +71,10 @@ public class RestsController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         ArrayList<String> response = new ArrayList<>();
         response = gameController.result(json.getYouNumber(), auth);
-        String message = gameListnerJMS.getText();
-        if(message.equals("")){
-            json.setProperties("null");
-
-        }else {
-            json.setProperties(message);
-        }
         json.setYouNumber(response.get(0));
+        json.setProperties(response.get(1));
+
+
 
 
         // After each departure of the number we save the whole history

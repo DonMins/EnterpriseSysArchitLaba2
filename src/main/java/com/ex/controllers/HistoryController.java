@@ -4,14 +4,26 @@ import com.ex.dao.HistoryDao;
 import com.ex.entity.History;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.jdom.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.jms.*;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +32,11 @@ import java.util.List;
 public class HistoryController {
     @Autowired
     HistoryDao historyDao;
+    private JAXBContext myJaxbContext;
 
 
     @RequestMapping(value="/xmlHistory", method = RequestMethod.GET)
-    public @ResponseBody Histories getHistory() throws JAXBException {
+    public @ResponseBody ModelAndView getHistory() throws JAXBException, IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         List<History> history = historyDao.findByUsername(auth.getName());
@@ -40,8 +53,19 @@ public class HistoryController {
             histories.getHistories().add(history1);
 
         }
+        myJaxbContext    = JAXBContext.newInstance( Histories.class );
+        URL localPackage = this.getClass().getResource("");
+        String localDir = localPackage.getPath();
+        System.out.println(localDir);
+        FileOutputStream stream = new FileOutputStream(localDir+"outputFile.xml");
+        Marshaller marshaller = myJaxbContext.createMarshaller();
+        marshaller.marshal(histories, stream);
+        String xmlFile = localDir+"outputFile.xml";
+        Source source = new StreamSource(new File(xmlFile));
+        ModelAndView model = new ModelAndView("XSLTView");
+        model.addObject("xmlSource", source);
 
-        return histories;
+        return model;
     }
 
 

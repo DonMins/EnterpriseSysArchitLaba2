@@ -46,20 +46,14 @@
         <th style="width: 800px"><textarea readonly id="textarea"></textarea></th>
         <th style="width: 800px"><textarea readonly id="textareaHistory"></textarea></th>
     </tr>
-    <tr>рррт
+    <tr>
         <th>
             <div class="text">Поле для ввода числа:</div>
             <input class="input" type="text" id="inputNumber" maxlength='4' minlength='4'
                    placeholder="Введите 4-х значное число" onkeyup="return check(this);"
                    onchange="return check(this); " required/></th>
-<%--        <form id="xmlForm" method="POST" action="${contextPath}/logout">--%>
-<%--            <th> <button class="button" type="submit" id="xml">Посмотреть ответ в XML</button> </th>--%>
-<%--        </form>--%>
 
-        <form id="xmlForm" method="POST" action="${contextPath}/xmlHistory">
-<%--            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>--%>
-            <button class="button" type="submit" id="xml">Посмотреть ответ в XML</button>
-        </form>
+
 
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </tr>

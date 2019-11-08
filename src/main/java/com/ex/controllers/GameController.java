@@ -140,6 +140,7 @@ public class GameController  {
             Changes changes = new Changes("Update", "User", "youNumber", user.getYouNumber());
             changesDao.save(changes);
             userService.update(user);
+            String text= "Число угадано!";
 
             try {
                 User user1 = new User(user.getUsername(),user.getPassword(),user.getYouNumber());
@@ -149,9 +150,11 @@ public class GameController  {
                 e.printStackTrace();
             }
             st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K (число угадано) \n---------------------------\nЯ загадал еще...");
+            st.add(text);
             return st;
         }
         st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K");
+        st.add("null");
 
         return (st);
     }
@@ -163,7 +166,7 @@ public class GameController  {
             ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
             Connection conn = cf.createConnection();
             Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination = new ActiveMQQueue("spitter.queue");
+            Destination destination = new ActiveMQQueue("spitter.topic");
             MessageProducer producer = session.createProducer(destination);
             ObjectMessage msg = session.createObjectMessage();
             String tex=mapper.writeValueAsString(user);

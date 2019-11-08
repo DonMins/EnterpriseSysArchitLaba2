@@ -52,7 +52,7 @@ public class JMSListener implements MessageListener {
                 ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
                 Connection conn = cf.createConnection();
                 Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-                Destination destination = new ActiveMQQueue("spitter.queue1");
+                Destination destination = new ActiveMQQueue("spitter.topic1");
                 MessageProducer producer = session.createProducer(destination);
                 TextMessage msg = session.createTextMessage();
                 String tex="Поздравляем! "+user.getUsername()+" выиграл игру!";
