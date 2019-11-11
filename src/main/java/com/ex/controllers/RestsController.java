@@ -74,9 +74,6 @@ public class RestsController {
         json.setYouNumber(response.get(0));
         json.setProperties(response.get(1));
 
-
-
-
         // After each departure of the number we save the whole history
         User user = userDao.findByUsername(auth.getName());
         Rating rating = ratingsDao.findByUsername(auth.getName());
@@ -89,7 +86,6 @@ public class RestsController {
         changesDao.save(changes2);
         changesDao.save(changes3);
         historyDao.save(history);
-
         return ResponseEntity.ok().body(json);
     }
 }

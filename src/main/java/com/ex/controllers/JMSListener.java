@@ -18,7 +18,6 @@ import javax.jms.*;
 import java.io.IOException;
 
 
-
 public class JMSListener implements MessageListener {
     @Autowired
     private RatingsDao ratingsDao;
@@ -28,9 +27,6 @@ public class JMSListener implements MessageListener {
     private JMSBaseDao jmsBaseDao;
     @Autowired
     private UserDao userDao;
-
-
-
 
     public void onMessage(Message message) {
         ObjectMapper mapper = new ObjectMapper();
@@ -43,11 +39,9 @@ public class JMSListener implements MessageListener {
                 ratingsDao.save(tempRating);
                 Changes changes1 = new Changes("Update", "Rating", "countGame", String.valueOf(tempRating.getCountgame()));
                 changesDao.save(changes1);
-                User user1 =userDao.findByUsername(user.getUsername()) ;
-                JMSBase jmsBase = new JMSBase(user1,text);
+                User user1 = userDao.findByUsername(user.getUsername());
+                JMSBase jmsBase = new JMSBase(user1, text);
                 jmsBaseDao.save(jmsBase);
-
-
 
                 ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
                 Connection conn = cf.createConnection();
@@ -55,15 +49,13 @@ public class JMSListener implements MessageListener {
                 Destination destination = new ActiveMQQueue("spitter.topic1");
                 MessageProducer producer = session.createProducer(destination);
                 TextMessage msg = session.createTextMessage();
-                String tex="Поздравляем! "+user.getUsername()+" выиграл игру!";
+                String tex = "Поздравляем! " + user.getUsername() + " выиграл игру!";
                 msg.setText(tex);
                 producer.send(msg);
-            }
-            catch (JMSException | IOException ex) {
+            } catch (JMSException | IOException ex) {
                 throw new RuntimeException(ex);
             }
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Message wrong");
         }
     }

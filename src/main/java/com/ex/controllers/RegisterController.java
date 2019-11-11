@@ -1,9 +1,5 @@
 package com.ex.controllers;
 
-import com.ex.dao.ChangesDao;
-import com.ex.dao.HistoryDao;
-import com.ex.dao.RatingsDao;
-import com.ex.entity.Changes;
 import com.ex.entity.User;
 import com.ex.service.SecurityService;
 import com.ex.service.UserService;
@@ -22,16 +18,7 @@ import java.io.UnsupportedEncodingException;
 public class RegisterController {
 
     @Autowired
-    private HistoryDao historyDao;
-
-    @Autowired
-    private ChangesDao changesDao;
-
-    @Autowired
     private UserService userService;
-
-    @Autowired
-    private RatingsDao ratingsDao;
 
     @Autowired
     private SecurityService securityService;
@@ -51,14 +38,10 @@ public class RegisterController {
         if (bindingResult.hasErrors()) {
             return "registration";
         }
-
         userService.save(userForm);
-
         securityService.autoLogin(userForm.getUsername(), userForm.getConfirmPassword());
-
         return "redirect:/game";
     }
-
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model, String error, String logout) {

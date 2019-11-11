@@ -1,7 +1,6 @@
 package com.ex.controllers;
 
 import com.ex.dao.ChangesDao;
-import com.ex.dao.JMSBaseDao;
 import com.ex.dao.RatingsDao;
 import com.ex.entity.Changes;
 import com.ex.entity.Rating;
@@ -13,7 +12,6 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -24,27 +22,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.jms.*;
 import java.util.*;
 
-import static org.springframework.jms.support.JmsUtils.closeConnection;
-
 /**
  * @author Zdornov Maxim
  * @version 1.0
  */
 
 @Controller
-public class GameController  {
+public class GameController {
     @Autowired
     private ChangesDao changesDao;
     @Autowired
     private UserService userService;
     @Autowired
     private RatingsDao ratingsDao;
-    @Autowired
-    private JMSBaseDao jmsBaseDao;
-
-
     final private Integer[] randomNumbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-
     /**
      * Method displays user rating
      *
@@ -72,7 +63,6 @@ public class GameController  {
         model.addAttribute("rating", map);
         return "rating";
     }
-
     /**
      * Game Start Page
      *
@@ -107,7 +97,7 @@ public class GameController  {
         return String.valueOf(randomNumbers[0]) + randomNumbers[1] + randomNumbers[2] + randomNumbers[3];
     }
 
-        ArrayList <String> result(String stringOfYouEnteredNumber, Authentication auth) {
+    ArrayList<String> result(String stringOfYouEnteredNumber, Authentication auth) {
         ArrayList<String> st = new ArrayList<>();
         Rating tempRating = ratingsDao.findByUsername(auth.getName());
         tempRating.setAllAttempt(tempRating.getAllAttempt() + 1); // increase the number of attempts to guess in the database
@@ -132,7 +122,6 @@ public class GameController  {
         l3.retainAll(numberSymbol);
         cow = l3.size() - bull;
         if (bull == 4) {
-
             user.setYouNumber(genNumber());
             Changes changes2 = new Changes("Update", "Rating", "allAtempt", String.valueOf(tempRating.getAllAttempt()));
             changesDao.save(changes2);
@@ -140,10 +129,9 @@ public class GameController  {
             Changes changes = new Changes("Update", "User", "youNumber", user.getYouNumber());
             changesDao.save(changes);
             userService.update(user);
-            String text= "Число угадано!";
-
+            String text = "Число угадано!";
             try {
-                User user1 = new User(user.getUsername(),user.getPassword(),user.getYouNumber());
+                User user1 = new User(user.getUsername(), user.getPassword(), user.getYouNumber());
                 sendObjectMessage(user1);
 
             } catch (JMSException | JsonProcessingException e) {
@@ -155,25 +143,19 @@ public class GameController  {
         }
         st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K");
         st.add("null");
-
         return (st);
     }
 
-
-
     private void sendObjectMessage(User user) throws JMSException, JsonProcessingException {
-            ObjectMapper mapper = new ObjectMapper();
-            ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
-            Connection conn = cf.createConnection();
-            Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination = new ActiveMQQueue("spitter.topic");
-            MessageProducer producer = session.createProducer(destination);
-            ObjectMessage msg = session.createObjectMessage();
-            String tex=mapper.writeValueAsString(user);
-            msg.setObject(tex);
-            producer.send(msg);
+        ObjectMapper mapper = new ObjectMapper();
+        ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
+        Connection conn = cf.createConnection();
+        Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Destination destination = new ActiveMQQueue("spitter.topic");
+        MessageProducer producer = session.createProducer(destination);
+        ObjectMessage msg = session.createObjectMessage();
+        String tex = mapper.writeValueAsString(user);
+        msg.setObject(tex);
+        producer.send(msg);
     }
-
-
-
 }
