@@ -25,10 +25,8 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(length = 50)
     private Integer countgame;
 
-    @Column(length = 50)
     private Integer allAttempt;
 
     @OneToOne()

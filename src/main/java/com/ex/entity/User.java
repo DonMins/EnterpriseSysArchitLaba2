@@ -42,9 +42,6 @@ public class User {
     @OneToOne(mappedBy = "users", fetch=FetchType.LAZY)
     private Rating rating;
 
-//    @OneToMany(mappedBy = "users", fetch=FetchType.LAZY)
-//    private History history;
-
     public User(String username, String password, String youNumber) {
         this.username = username;
         this.password = password;

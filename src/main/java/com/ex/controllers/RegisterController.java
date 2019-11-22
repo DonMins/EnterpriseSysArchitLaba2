@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.UnsupportedEncodingException;
 
+/**
+ * @author Zdornov Maxim
+ * @version 1.0
+ */
+
 @Controller
 public class RegisterController {
 

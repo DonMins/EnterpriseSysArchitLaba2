@@ -40,12 +40,10 @@ public class History implements Serializable {
     @JoinColumn(name = "idUser")
     private User users;
 
-    /** Номер игры пользователя */
-
+    // Номер игры пользователя
     @Column(name = "gameNumber")
     @XmlElement
     private int gameNumber;
-
 
     public History(User user, String data, int gameNumber) {
         this.data = data;

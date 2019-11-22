@@ -24,8 +24,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+/**
+ * @author Pashina Tanya
+ * @version 1.0
+ */
 
+@Controller
 public class HistoryController {
     @Autowired
     HistoryDao historyDao;
@@ -60,10 +64,9 @@ public class HistoryController {
         return model;
     }
 
-
     @RequestMapping(value = "/jsonHistory", method = RequestMethod.GET)
     public @ResponseBody
-    List<History> getJsonHistory() throws JAXBException, JMSException {
+    List<History> getJsonHistory() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         List<History> history = historyDao.findByUsername(auth.getName());
@@ -77,10 +80,7 @@ public class HistoryController {
             history1.setGameNumber(hist.getGameNumber());
             history1.setId(hist.getId());
             histories.add(history1);
-
         }
-
-
         return histories;
     }
 }

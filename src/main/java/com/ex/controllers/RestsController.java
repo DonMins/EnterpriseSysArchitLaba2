@@ -9,6 +9,7 @@ import com.ex.entity.History;
 import com.ex.entity.Rating;
 import com.ex.entity.User;
 import com.ex.task.YouNumberOfjson;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,25 +21,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * @author Zdornov Maxim
+ * @version 1.0
+ */
 
 @RestController
 public class RestsController {
     @Autowired
     private HistoryDao historyDao;
+
     @Autowired
     private UserDao userDao;
+
     @Autowired
     private ChangesDao changesDao;
+
     @Autowired
     private RatingsDao ratingsDao;
+
     @Autowired
     private GameController gameController;
 
     @RequestMapping(method = RequestMethod.POST, value = "/history", consumes = "text/plain")
     ResponseEntity<?> history(@RequestBody String string) throws IOException {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<History> history = historyDao.findByUsername(auth.getName());
         String newHistory = "";
@@ -67,7 +79,8 @@ public class RestsController {
      * @return Return the result to game.jsp
      */
     @RequestMapping(value = "/newAttempt", method = RequestMethod.POST, headers = {"Content-type=application/json"})
-    ResponseEntity<YouNumberOfjson> newAttempt(@RequestBody YouNumberOfjson json) throws IOException {
+    ResponseEntity<YouNumberOfjson> newAttempt(@RequestBody YouNumberOfjson json) throws JMSException, IOException {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         ArrayList<String> response = new ArrayList<>();
         response = gameController.result(json.getYouNumber(), auth);

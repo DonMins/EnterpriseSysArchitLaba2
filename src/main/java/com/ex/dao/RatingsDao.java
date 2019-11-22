@@ -11,6 +11,4 @@ public interface RatingsDao extends JpaRepository<Rating, Integer> {
 
     @Query("select max(u.countgame) from Rating u where u.users.username=:username")
     Integer findMaxGameNumber(@Param("username")String username);
-
-
 }

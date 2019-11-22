@@ -54,7 +54,6 @@
                    onchange="return check(this); " required/></th>
 
 
-
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </tr>
     <tr>

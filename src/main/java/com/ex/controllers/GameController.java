@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.jms.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Zdornov Maxim
@@ -31,11 +32,16 @@ import java.util.*;
 public class GameController {
     @Autowired
     private ChangesDao changesDao;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private RatingsDao ratingsDao;
+
     final private Integer[] randomNumbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    final private String WIN_MESSAGE = "Число угадано!";
+
     /**
      * Method displays user rating
      *
@@ -44,28 +50,27 @@ public class GameController {
     @RequestMapping(value = "/rating")
     public String rating(Model model) {
         List<Rating> ratingList = ratingsDao.findAll();
-        // Создаем map с именем пользователя и его рейтингом и сразу отсортировываем по убыванию
-        Map<Double, String> map = new TreeMap<>(new Comparator<Double>() {
-            @Override
-            public int compare(Double a, Double b) {
-                if (a >= b) {
-                    return 1;
-                } else if (a < b)
-                    return -1;
-                else
-                    return 0;
-            }
-        });
-        // Пользователи с 0  getCountgame() не будут отображаться в списке
+        Map<String, Double> map = new LinkedHashMap<>();
+
         for (Rating rating : ratingList) {
-            map.put((double) rating.getAllAttempt() / rating.getCountgame(), rating.getUsers().getUsername());
+            if (rating.getCountgame() == 0) {
+                map.put(rating.getUsers().getUsername(), Double.NaN);
+            } else {
+                map.put(rating.getUsers().getUsername(), (double) (rating.getAllAttempt() / rating.getCountgame()));
+            }
         }
-        model.addAttribute("rating", map);
+        model.addAttribute("rating", map
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new)));
+
         return "rating";
     }
+
     /**
      * Game Start Page
-     *
      * @return Return game.jsp page
      */
     @GetMapping(value = {"/", "/game"})
@@ -73,23 +78,12 @@ public class GameController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(auth.getName());
         user.setYouNumber(genNumber()); // Как только пользователь вошел на страницу game, сразу сгенерим ему число для угадывания
-        System.out.println(user.getYouNumber());
+        System.out.println(user.getYouNumber()); // Чтобы долго не угадывать
         Changes changes = new Changes("Update", "User", "youNumber", user.getYouNumber());
         changesDao.save(changes);
         userService.update(user);
         return "game";
     }
-
-    @Bean
-    ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-
-    /**
-     * This method allows you to get the history of previous user games
-     *
-     * @return Return the history to game.jsp to textareaHistory
-     */
 
     private String genNumber() {
         Collections.shuffle(Arrays.asList(randomNumbers));
@@ -97,8 +91,8 @@ public class GameController {
         return String.valueOf(randomNumbers[0]) + randomNumbers[1] + randomNumbers[2] + randomNumbers[3];
     }
 
-    ArrayList<String> result(String stringOfYouEnteredNumber, Authentication auth) {
-        ArrayList<String> st = new ArrayList<>();
+   public ArrayList<String> result(String stringOfYouEnteredNumber, Authentication auth) throws JsonProcessingException, JMSException {
+        ArrayList<String> messageList = new ArrayList<>();
         Rating tempRating = ratingsDao.findByUsername(auth.getName());
         tempRating.setAllAttempt(tempRating.getAllAttempt() + 1); // increase the number of attempts to guess in the database
 
@@ -111,7 +105,6 @@ public class GameController {
         ArrayList<Character> l3;
         l3 = strSymbol;
         int bull = 0;
-        int cow = 0;
         for (int i = 0; i < 4; ++i) {
             numberSymbol.add(number.charAt(i));
             strSymbol.add(stringOfYouEnteredNumber.charAt(i));
@@ -120,30 +113,30 @@ public class GameController {
             }
         }
         l3.retainAll(numberSymbol);
-        cow = l3.size() - bull;
+        int cow = l3.size() - bull;
         if (bull == 4) {
             user.setYouNumber(genNumber());
             Changes changes2 = new Changes("Update", "Rating", "allAtempt", String.valueOf(tempRating.getAllAttempt()));
             changesDao.save(changes2);
-            ratingsDao.save(tempRating);
+
+            Rating tempRatin = ratingsDao.findByUsername(user.getUsername());
+            tempRatin.setCountgame(tempRatin.getCountgame() + 1);
+            ratingsDao.save(tempRatin);
+
             Changes changes = new Changes("Update", "User", "youNumber", user.getYouNumber());
             changesDao.save(changes);
             userService.update(user);
-            String text = "Число угадано!";
             try {
-                User user1 = new User(user.getUsername(), user.getPassword(), user.getYouNumber());
-                sendObjectMessage(user1);
-
-            } catch (JMSException | JsonProcessingException e) {
-                e.printStackTrace();
+                sendObjectMessage(new User(user.getUsername(), user.getPassword(), user.getYouNumber()));
             }
-            st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K (число угадано) \n---------------------------\nЯ загадал еще...");
-            st.add(text);
-            return st;
+            catch (JMSException e){}
+            messageList.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K (число угадано) \n---------------------------\nЯ загадал еще...");
+            messageList.add(WIN_MESSAGE);
+            return messageList;
         }
-        st.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K");
-        st.add("null");
-        return (st);
+        messageList.add(stringOfYouEnteredNumber + " - " + bull + "Б" + cow + "K");
+        messageList.add("null");
+        return (messageList);
     }
 
     private void sendObjectMessage(User user) throws JMSException, JsonProcessingException {

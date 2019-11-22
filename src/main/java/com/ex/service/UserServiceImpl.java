@@ -7,13 +7,11 @@ import com.ex.dao.RatingsDao;
 import com.ex.dao.UserDao;
 
 import com.ex.entity.Changes;
-import com.ex.entity.History;
 import com.ex.entity.Rating;
 import com.ex.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 /**
  * UserServiceImpl implements UserService
@@ -27,14 +25,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
     @Autowired
     private RatingsDao ratingsDao;
+
     @Autowired
     private HistoryDao historyDao;
 
     @Autowired
     private ChangesDao changesDao;
-
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -66,7 +65,6 @@ public class UserServiceImpl implements UserService {
         changesDao.save(changes6);
 
         ratingsDao.save(new Rating(0,0,user));
-//        historyDao.save(new History(user,"",0));
     }
 
     @Override

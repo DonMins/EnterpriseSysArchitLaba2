@@ -8,8 +8,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+/**
+ * @author Pashina Tanya
+ * @version 1.0
+ */
+
 @XmlRootElement(name = "histories")
-@XmlAccessorType (XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Histories {
     @XmlElement(name = "history")
     private List<History> histories = null;

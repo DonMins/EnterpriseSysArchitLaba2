@@ -24,8 +24,9 @@
         <c:forEach items="${rating}" var="item" varStatus="status">
             <tr>
                 <th scope="row">${status.index+1}</th>
-                <td>${item.value}</td>
                 <td>${item.key}</td>
+                <td>${item.value}</td>
+
             </tr>
         </c:forEach>
         </tbody>

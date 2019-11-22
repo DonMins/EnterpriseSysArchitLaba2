@@ -1,6 +1,5 @@
 package com.ex.controllers;
 
-
 import com.ex.dao.ChangesDao;
 import com.ex.dao.JMSBaseDao;
 import com.ex.dao.RatingsDao;
@@ -17,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.jms.*;
 import java.io.IOException;
 
+/**
+ * @author Pashina Tanya
+ * @version 1.0
+ */
 
 public class JMSListener implements MessageListener {
     @Autowired
