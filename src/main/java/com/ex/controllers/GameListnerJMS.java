@@ -1,5 +1,9 @@
 package com.ex.controllers;
 
+import com.ex.dao.JMSBaseDao;
+import com.ex.entity.JMSBase;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.jms.*;
 
 /**
@@ -8,25 +12,20 @@ import javax.jms.*;
  */
 
 public class GameListnerJMS implements MessageListener {
-    private String text = "";
+    @Autowired
+    private JMSBaseDao jmsBaseDao;
 
     @Override
     public void onMessage(Message message) {
         if (message instanceof TextMessage) {
             try {
                 String text1 = ((TextMessage) message).getText();
-                setText(text1);
+                JMSBase jmsBase = new JMSBase(null, text1);
+                jmsBaseDao.save(jmsBase);
             } catch (JMSException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public String getText() {
-        return text;
-    }
-
-    private void setText(String text) {
-        this.text = text;
-    }
 }

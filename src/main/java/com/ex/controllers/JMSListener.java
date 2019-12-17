@@ -11,6 +11,7 @@ import com.ex.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jms.*;
@@ -49,7 +50,7 @@ public class JMSListener implements MessageListener {
                 ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
                 Connection conn = cf.createConnection();
                 Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-                Destination destination = new ActiveMQQueue("spitter.topic1");
+                Destination destination = new ActiveMQTopic("spitter.topic1");
                 MessageProducer producer = session.createProducer(destination);
                 TextMessage msg = session.createTextMessage();
                 String tex = "Поздравляем! " + user.getUsername() + " выиграл игру!";

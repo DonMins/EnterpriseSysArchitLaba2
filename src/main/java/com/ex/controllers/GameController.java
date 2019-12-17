@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
@@ -144,7 +145,7 @@ public class GameController {
         ConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
         Connection conn = cf.createConnection();
         Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination destination = new ActiveMQQueue("spitter.topic");
+        Destination destination = new ActiveMQTopic("spitter.topic");
         MessageProducer producer = session.createProducer(destination);
         ObjectMessage msg = session.createObjectMessage();
         String tex = mapper.writeValueAsString(user);
